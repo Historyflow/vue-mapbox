@@ -27,7 +27,10 @@
         resolves = [];
       /******/ for (; i < chunkIds.length; i++) {
         /******/ chunkId = chunkIds[i];
-        /******/ if (installedChunks[chunkId]) {
+        /******/ if (
+          Object.prototype.hasOwnProperty.call(installedChunks, chunkId) &&
+          installedChunks[chunkId]
+        ) {
           /******/ resolves.push(installedChunks[chunkId][0]);
           /******/
         }
@@ -361,6 +364,11 @@
         /***/
       },
 
+      /***/ "1332": /***/ function(module, exports, __webpack_require__) {
+        // extracted by mini-css-extract-plugin
+        /***/
+      },
+
       /***/ "1495": /***/ function(module, exports, __webpack_require__) {
         var dP = __webpack_require__("86cc");
         var anObject = __webpack_require__("cb7c");
@@ -580,17 +588,17 @@
           return it === undefined
             ? "Undefined"
             : it === null
-              ? "Null"
-              : // @@toStringTag case
-                typeof (T = tryGet((O = Object(it)), TAG)) == "string"
-                ? T
-                : // builtinTag case
-                  ARG
-                  ? cof(O)
-                  : // ES3 arguments fallback
-                    (B = cof(O)) == "Object" && typeof O.callee == "function"
-                    ? "Arguments"
-                    : B;
+            ? "Null"
+            : // @@toStringTag case
+            typeof (T = tryGet((O = Object(it)), TAG)) == "string"
+            ? T
+            : // builtinTag case
+            ARG
+            ? cof(O)
+            : // ES3 arguments fallback
+            (B = cof(O)) == "Object" && typeof O.callee == "function"
+            ? "Arguments"
+            : B;
         };
 
         /***/
@@ -1487,8 +1495,8 @@
           var target = IS_GLOBAL
             ? global
             : IS_STATIC
-              ? global[name] || (global[name] = {})
-              : (global[name] || {})[PROTOTYPE];
+            ? global[name] || (global[name] = {})
+            : (global[name] || {})[PROTOTYPE];
           var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
           var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
           var key, own, out, exp;
@@ -1503,8 +1511,8 @@
               IS_BIND && own
                 ? ctx(out, global)
                 : IS_PROTO && typeof out == "function"
-                  ? ctx(Function.call, out)
-                  : out;
+                ? ctx(Function.call, out)
+                : out;
             // extend global
             if (target) redefine(target, key, out, type & $export.U);
             // export
@@ -1706,20 +1714,15 @@
         /***/
       },
 
-      /***/ "74f8": /***/ function(module, exports, __webpack_require__) {
-        // extracted by mini-css-extract-plugin
-        /***/
-      },
-
       /***/ "7726": /***/ function(module, exports) {
         // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
         var global = (module.exports =
           typeof window != "undefined" && window.Math == Math
             ? window
             : typeof self != "undefined" && self.Math == Math
-              ? self
-              : // eslint-disable-next-line no-new-func
-                Function("return this")());
+            ? self
+            : // eslint-disable-next-line no-new-func
+              Function("return this")());
         if (typeof __g == "number") __g = global; // eslint-disable-line no-undef
 
         /***/
@@ -1917,6 +1920,103 @@
         /***/
       },
 
+      /***/ "8875": /***/ function(module, exports, __webpack_require__) {
+        var __WEBPACK_AMD_DEFINE_FACTORY__,
+          __WEBPACK_AMD_DEFINE_ARRAY__,
+          __WEBPACK_AMD_DEFINE_RESULT__; // addapted from the document.currentScript polyfill by Adam Miller
+        // MIT license
+        // source: https://github.com/amiller-gh/currentScript-polyfill
+
+        // added support for Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1620505
+
+        (function(root, factory) {
+          if (true) {
+            !((__WEBPACK_AMD_DEFINE_ARRAY__ = []),
+            (__WEBPACK_AMD_DEFINE_FACTORY__ = factory),
+            (__WEBPACK_AMD_DEFINE_RESULT__ =
+              typeof __WEBPACK_AMD_DEFINE_FACTORY__ === "function"
+                ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(
+                    exports,
+                    __WEBPACK_AMD_DEFINE_ARRAY__
+                  )
+                : __WEBPACK_AMD_DEFINE_FACTORY__),
+            __WEBPACK_AMD_DEFINE_RESULT__ !== undefined &&
+              (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+          } else {
+          }
+        })(typeof self !== "undefined" ? self : this, function() {
+          function getCurrentScript() {
+            if (document.currentScript) {
+              return document.currentScript;
+            }
+
+            // IE 8-10 support script readyState
+            // IE 11+ & Firefox support stack trace
+            try {
+              throw new Error();
+            } catch (err) {
+              // Find the second match for the "at" string to get file src url from stack.
+              var ieStackRegExp = /.*at [^(]*\((.*):(.+):(.+)\)$/gi,
+                ffStackRegExp = /@([^@]*):(\d+):(\d+)\s*$/gi,
+                stackDetails =
+                  ieStackRegExp.exec(err.stack) ||
+                  ffStackRegExp.exec(err.stack),
+                scriptLocation = (stackDetails && stackDetails[1]) || false,
+                line = (stackDetails && stackDetails[2]) || false,
+                currentLocation = document.location.href.replace(
+                  document.location.hash,
+                  ""
+                ),
+                pageSource,
+                inlineScriptSourceRegExp,
+                inlineScriptSource,
+                scripts = document.getElementsByTagName("script"); // Live NodeList collection
+
+              if (scriptLocation === currentLocation) {
+                pageSource = document.documentElement.outerHTML;
+                inlineScriptSourceRegExp = new RegExp(
+                  "(?:[^\\n]+?\\n){0," +
+                    (line - 2) +
+                    "}[^<]*<script>([\\d\\D]*?)<\\/script>[\\d\\D]*",
+                  "i"
+                );
+                inlineScriptSource = pageSource
+                  .replace(inlineScriptSourceRegExp, "$1")
+                  .trim();
+              }
+
+              for (var i = 0; i < scripts.length; i++) {
+                // If ready state is interactive, return the script tag
+                if (scripts[i].readyState === "interactive") {
+                  return scripts[i];
+                }
+
+                // If src matches, return the script tag
+                if (scripts[i].src === scriptLocation) {
+                  return scripts[i];
+                }
+
+                // If inline source matches, return the script tag
+                if (
+                  scriptLocation === currentLocation &&
+                  scripts[i].innerHTML &&
+                  scripts[i].innerHTML.trim() === inlineScriptSource
+                ) {
+                  return scripts[i];
+                }
+              }
+
+              // If no match, return null
+              return null;
+            }
+          }
+
+          return getCurrentScript;
+        });
+
+        /***/
+      },
+
       /***/ "8b97": /***/ function(module, exports, __webpack_require__) {
         // Works with __proto__ only. Old v8 can't work with null proto objects.
         /* eslint-disable no-proto */
@@ -2062,15 +2162,15 @@
         __webpack_require__
       ) {
         "use strict";
-        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
-          "74f8"
+        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+          "1332"
         );
-        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/ __webpack_require__.n(
-          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__
+        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/ __webpack_require__.n(
+          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__
         );
         /* unused harmony reexport * */
         /* unused harmony default export */ var _unused_webpack_default_export =
-          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_index_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a;
+          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_6_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_6_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_oneOf_1_2_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GlMap_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a;
 
         /***/
       },
@@ -2632,27 +2732,136 @@
         __webpack_require__
       ) {
         "use strict";
+        // ESM COMPAT FLAG
         __webpack_require__.r(__webpack_exports__);
+
+        // EXPORTS
+        __webpack_require__.d(__webpack_exports__, "withEvents", function() {
+          return /* reexport */ main_withEvents;
+        });
+        __webpack_require__.d(
+          __webpack_exports__,
+          "withSelfEvents",
+          function() {
+            return /* reexport */ main_withSelfEvents;
+          }
+        );
+        __webpack_require__.d(__webpack_exports__, "asControl", function() {
+          return /* reexport */ asControl;
+        });
+        __webpack_require__.d(__webpack_exports__, "asLayer", function() {
+          return /* reexport */ asLayer;
+        });
+        __webpack_require__.d(__webpack_exports__, "$helpers", function() {
+          return /* reexport */ $helpers;
+        });
+        __webpack_require__.d(__webpack_exports__, "MglMap", function() {
+          return /* reexport */ MglMap;
+        });
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglNavigationControl",
+          function() {
+            return /* reexport */ MglNavigationControl;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglGeolocateControl",
+          function() {
+            return /* reexport */ MglGeolocateControl;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglFullscreenControl",
+          function() {
+            return /* reexport */ MglFullscreenControl;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglAttributionControl",
+          function() {
+            return /* reexport */ MglAttributionControl;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglScaleControl",
+          function() {
+            return /* reexport */ MglScaleControl;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglGeojsonLayer",
+          function() {
+            return /* reexport */ MglGeojsonLayer;
+          }
+        );
+        __webpack_require__.d(__webpack_exports__, "MglImageLayer", function() {
+          return /* reexport */ MglImageLayer;
+        });
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglCanvasLayer",
+          function() {
+            return /* reexport */ MglCanvasLayer;
+          }
+        );
+        __webpack_require__.d(__webpack_exports__, "MglVideoLayer", function() {
+          return /* reexport */ MglVideoLayer;
+        });
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglVectorLayer",
+          function() {
+            return /* reexport */ MglVectorLayer;
+          }
+        );
+        __webpack_require__.d(
+          __webpack_exports__,
+          "MglRasterLayer",
+          function() {
+            return /* reexport */ MglRasterLayer;
+          }
+        );
+        __webpack_require__.d(__webpack_exports__, "MglMarker", function() {
+          return /* reexport */ MglMarker;
+        });
+        __webpack_require__.d(__webpack_exports__, "MglPopup", function() {
+          return /* reexport */ MglPopup;
+        });
 
         // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/setPublicPath.js
         // This file is imported into lib/wc client bundles.
 
         if (typeof window !== "undefined") {
-          var setPublicPath_i;
-          if (
-            (setPublicPath_i = window.document.currentScript) &&
-            (setPublicPath_i = setPublicPath_i.src.match(
-              /(.+\/)[^/]+\.js(\?.*)?$/
-            ))
-          ) {
-            __webpack_require__.p = setPublicPath_i[1]; // eslint-disable-line
+          var currentScript = window.document.currentScript;
+          if (true) {
+            var getCurrentScript = __webpack_require__("8875");
+            currentScript = getCurrentScript();
+
+            // for backward compatibility, because previously we directly included the polyfill
+            if (!("currentScript" in document)) {
+              Object.defineProperty(document, "currentScript", {
+                get: getCurrentScript
+              });
+            }
+          }
+
+          var src =
+            currentScript && currentScript.src.match(/(.+\/)[^/]+\.js(\?.*)?$/);
+          if (src) {
+            __webpack_require__.p = src[1]; // eslint-disable-line
           }
         }
 
         // Indicate to webpack that this file can be concatenated
         /* harmony default export */ var setPublicPath = null;
 
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"47f5d000-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/map/GlMap.vue?vue&type=template&id=b8a4f864&
+        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"9986cdae-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/map/GlMap.vue?vue&type=template&id=54621512&
         var render = function() {
           var _vm = this;
           var _h = _vm.$createElement;
@@ -2676,7 +2885,7 @@
           }
         ];
 
-        // CONCATENATED MODULE: ./src/components/map/GlMap.vue?vue&type=template&id=b8a4f864&
+        // CONCATENATED MODULE: ./src/components/map/GlMap.vue?vue&type=template&id=54621512&
 
         // EXTERNAL MODULE: ./node_modules/core-js/modules/web.dom.iterable.js
         var web_dom_iterable = __webpack_require__("ac6a");
@@ -3059,8 +3268,12 @@
             type: Number,
             default: 0
           },
-          initialBounds: {
+          bounds: {
             type: [Object, Array],
+            default: undefined
+          },
+          fitBoundsOptions: {
+            type: Object,
             default: undefined
           },
           renderWorldCopies: {
@@ -3397,10 +3610,6 @@
             version: function version() {
               return this.map ? this.map.version : null;
             },
-            // TODO: make 'bounds' synced prop
-            bounds: function bounds() {
-              return this.map ? this.map.getBounds() : null;
-            },
             isStyleLoaded: function isStyleLoaded() {
               return this.map ? this.map.isStyleLoaded() : false;
             },
@@ -3552,7 +3761,7 @@
               // for template-only hot-reload because in that case the render fn doesn't
               // go through the normalizer
               options._injectStyles = hook;
-              // register for functioal component in vue file
+              // register for functional component in vue file
               var originalRender = options.render;
               options.render = function renderWithStyleInjection(h, context) {
                 hook.call(context);
@@ -3587,7 +3796,6 @@
           null
         );
 
-        component.options.__file = "GlMap.vue";
         /* harmony default export */ var GlMap = component.exports;
         // CONCATENATED MODULE: ./src/components/UI/withSelfEvents.js
 
@@ -3806,7 +4014,7 @@
             this.$_addControl();
           }
         };
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"47f5d000-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/UI/Marker.vue?vue&type=template&id=63af2177&
+        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"9986cdae-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/UI/Marker.vue?vue&type=template&id=63af2177&
         var Markervue_type_template_id_63af2177_render = function() {
           var _vm = this;
           var _h = _vm.$createElement;
@@ -3986,10 +4194,9 @@
           null
         );
 
-        Marker_component.options.__file = "Marker.vue";
         /* harmony default export */ var Marker = Marker_component.exports;
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"47f5d000-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/UI/Popup.vue?vue&type=template&id=6e79a273&
-        var Popupvue_type_template_id_6e79a273_render = function() {
+        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"9986cdae-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/UI/Popup.vue?vue&type=template&id=bdbffbcc&
+        var Popupvue_type_template_id_bdbffbcc_render = function() {
           var _vm = this;
           var _h = _vm.$createElement;
           var _c = _vm._self._c || _h;
@@ -4000,9 +4207,9 @@
             2
           );
         };
-        var Popupvue_type_template_id_6e79a273_staticRenderFns = [];
+        var Popupvue_type_template_id_bdbffbcc_staticRenderFns = [];
 
-        // CONCATENATED MODULE: ./src/components/UI/Popup.vue?vue&type=template&id=6e79a273&
+        // CONCATENATED MODULE: ./src/components/UI/Popup.vue?vue&type=template&id=bdbffbcc&
 
         // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/UI/Popup.vue?vue&type=script&lang=js&
 
@@ -4128,7 +4335,7 @@
               },
               set: function set(value) {
                 if (this.map && this.popup) {
-                  if (value) {
+                  if (!value) {
                     this.popup.remove();
                   } else {
                     this.popup.addTo(this.map);
@@ -4225,15 +4432,14 @@
 
         var Popup_component = normalizeComponent(
           UI_Popupvue_type_script_lang_js_,
-          Popupvue_type_template_id_6e79a273_render,
-          Popupvue_type_template_id_6e79a273_staticRenderFns,
+          Popupvue_type_template_id_bdbffbcc_render,
+          Popupvue_type_template_id_bdbffbcc_staticRenderFns,
           false,
           null,
           null,
           null
         );
 
-        Popup_component.options.__file = "Popup.vue";
         /* harmony default export */ var Popup = Popup_component.exports;
         // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.regexp.replace.js
         var es6_regexp_replace = __webpack_require__("a481");
@@ -5195,139 +5401,6 @@
         var MglPopup = Popup;
         /* harmony default export */ var main = GlMap;
         // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib.js
-        /* concated harmony reexport withEvents */ __webpack_require__.d(
-          __webpack_exports__,
-          "withEvents",
-          function() {
-            return main_withEvents;
-          }
-        );
-        /* concated harmony reexport withSelfEvents */ __webpack_require__.d(
-          __webpack_exports__,
-          "withSelfEvents",
-          function() {
-            return main_withSelfEvents;
-          }
-        );
-        /* concated harmony reexport asControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "asControl",
-          function() {
-            return asControl;
-          }
-        );
-        /* concated harmony reexport asLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "asLayer",
-          function() {
-            return asLayer;
-          }
-        );
-        /* concated harmony reexport $helpers */ __webpack_require__.d(
-          __webpack_exports__,
-          "$helpers",
-          function() {
-            return $helpers;
-          }
-        );
-        /* concated harmony reexport MglMap */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglMap",
-          function() {
-            return MglMap;
-          }
-        );
-        /* concated harmony reexport MglNavigationControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglNavigationControl",
-          function() {
-            return MglNavigationControl;
-          }
-        );
-        /* concated harmony reexport MglGeolocateControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglGeolocateControl",
-          function() {
-            return MglGeolocateControl;
-          }
-        );
-        /* concated harmony reexport MglFullscreenControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglFullscreenControl",
-          function() {
-            return MglFullscreenControl;
-          }
-        );
-        /* concated harmony reexport MglAttributionControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglAttributionControl",
-          function() {
-            return MglAttributionControl;
-          }
-        );
-        /* concated harmony reexport MglScaleControl */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglScaleControl",
-          function() {
-            return MglScaleControl;
-          }
-        );
-        /* concated harmony reexport MglGeojsonLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglGeojsonLayer",
-          function() {
-            return MglGeojsonLayer;
-          }
-        );
-        /* concated harmony reexport MglImageLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglImageLayer",
-          function() {
-            return MglImageLayer;
-          }
-        );
-        /* concated harmony reexport MglCanvasLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglCanvasLayer",
-          function() {
-            return MglCanvasLayer;
-          }
-        );
-        /* concated harmony reexport MglVideoLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglVideoLayer",
-          function() {
-            return MglVideoLayer;
-          }
-        );
-        /* concated harmony reexport MglVectorLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglVectorLayer",
-          function() {
-            return MglVectorLayer;
-          }
-        );
-        /* concated harmony reexport MglRasterLayer */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglRasterLayer",
-          function() {
-            return MglRasterLayer;
-          }
-        );
-        /* concated harmony reexport MglMarker */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglMarker",
-          function() {
-            return MglMarker;
-          }
-        );
-        /* concated harmony reexport MglPopup */ __webpack_require__.d(
-          __webpack_exports__,
-          "MglPopup",
-          function() {
-            return MglPopup;
-          }
-        );
 
         /* harmony default export */ var entry_lib = (__webpack_exports__[
           "default"
